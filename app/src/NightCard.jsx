@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const DAY_FR = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 const MONTH_FR = ["jan", "fév", "mar", "avr", "mai", "juin", "juil", "août", "sep", "oct", "nov", "déc"];
@@ -23,22 +23,26 @@ const STATUS_STYLE = {
 };
 
 export default function NightCard({ night, index, total, onChange }) {
-  const [editing, setEditing]   = useState(false);
-  const [draft, setDraft]       = useState({
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState({
     city:      night.city,
     link:      night.link,
     price:     night.price ?? "",
     confirmed: night.confirmed ?? false,
   });
+  const [notes, setNotes] = useState(night.notes ?? "");
+  const debounceRef = useRef(null);
+
+  // Sync notes field if parent data changes (e.g. on load from Supabase)
+  useEffect(() => {
+    setNotes(night.notes ?? "");
+  }, [night.notes]);
 
   const status = statusOf(night);
   const style  = STATUS_STYLE[status];
 
   function save() {
-    onChange({
-      ...draft,
-      price: draft.price === "" ? "" : draft.price,
-    });
+    onChange({ ...draft });
     setEditing(false);
   }
 
@@ -48,8 +52,17 @@ export default function NightCard({ night, index, total, onChange }) {
   }
 
   function toggleConfirmed() {
-    const next = !night.confirmed;
-    onChange({ confirmed: next });
+    onChange({ confirmed: !night.confirmed });
+  }
+
+  function handleNotesChange(e) {
+    const value = e.target.value;
+    setNotes(value);
+    // Debounce save to Supabase by 800ms
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onChange({ notes: value });
+    }, 800);
   }
 
   return (
@@ -188,6 +201,29 @@ export default function NightCard({ night, index, total, onChange }) {
         </div>
       </div>
 
+      {/* Notes */}
+      <div style={{ marginTop: "0.6rem", marginLeft: 102 }}>
+        <textarea
+          value={notes}
+          onChange={handleNotesChange}
+          placeholder="Notes, idées, activités prévues…"
+          rows={2}
+          style={{
+            width: "100%",
+            padding: "0.4rem 0.6rem",
+            border: "1.5px solid #e2e8f0",
+            borderRadius: 6,
+            fontSize: "0.82rem",
+            fontFamily: "inherit",
+            color: "#4a5568",
+            resize: "vertical",
+            outline: "none",
+            background: "rgba(255,255,255,0.7)",
+          }}
+          onFocus={e => e.target.style.borderColor = "#a0aec0"}
+          onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+        />
+      </div>
     </div>
   );
 }
