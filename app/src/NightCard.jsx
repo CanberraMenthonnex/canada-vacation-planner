@@ -31,6 +31,7 @@ export default function NightCard({ night, index, total, onChange }) {
     confirmed: night.confirmed ?? false,
   });
   const [notes, setNotes] = useState(night.notes ?? "");
+  const [showNotes, setShowNotes] = useState(false);
   const debounceRef = useRef(null);
 
   // Sync notes field if parent data changes (e.g. on load from Supabase)
@@ -201,29 +202,53 @@ export default function NightCard({ night, index, total, onChange }) {
         </div>
       </div>
 
-      {/* Notes */}
-      <div style={{ marginTop: "0.6rem", marginLeft: 102 }}>
-        <textarea
-          value={notes}
-          onChange={handleNotesChange}
-          placeholder="Notes, idées, activités prévues…"
-          rows={2}
-          style={{
-            width: "100%",
-            padding: "0.4rem 0.6rem",
-            border: "1.5px solid #e2e8f0",
-            borderRadius: 6,
-            fontSize: "0.82rem",
-            fontFamily: "inherit",
-            color: "#4a5568",
-            resize: "vertical",
-            outline: "none",
-            background: "rgba(255,255,255,0.7)",
-          }}
-          onFocus={e => e.target.style.borderColor = "#a0aec0"}
-          onBlur={e => e.target.style.borderColor = "#e2e8f0"}
-        />
-      </div>
+      {/* Notes toggle */}
+      {!editing && (
+        <div style={{ marginTop: "0.5rem", marginLeft: 102 }}>
+          <button
+            onClick={() => setShowNotes(v => !v)}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "0.75rem",
+              color: notes ? "#4a5568" : "#a0aec0",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.25rem",
+            }}
+          >
+            <span style={{ fontSize: "0.65rem" }}>{showNotes ? "▼" : "▶"}</span>
+            {notes ? "Notes" : "Ajouter une note"}
+          </button>
+
+          {showNotes && (
+            <textarea
+              autoFocus
+              value={notes}
+              onChange={handleNotesChange}
+              placeholder="Notes, idées, activités prévues…"
+              rows={3}
+              style={{
+                marginTop: "0.4rem",
+                width: "100%",
+                padding: "0.4rem 0.6rem",
+                border: "1.5px solid #e2e8f0",
+                borderRadius: 6,
+                fontSize: "0.82rem",
+                fontFamily: "inherit",
+                color: "#4a5568",
+                resize: "vertical",
+                outline: "none",
+                background: "rgba(255,255,255,0.7)",
+              }}
+              onFocus={e => e.target.style.borderColor = "#a0aec0"}
+              onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
