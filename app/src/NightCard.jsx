@@ -34,10 +34,18 @@ export default function NightCard({ night, index, total, onChange }) {
   const [showNotes, setShowNotes] = useState(false);
   const debounceRef = useRef(null);
 
-  // Sync notes field if parent data changes (e.g. on load from Supabase)
+  // Sync fields when Supabase data loads (initial state is from INITIAL_NIGHTS, real data arrives async)
   useEffect(() => {
     setNotes(night.notes ?? "");
-  }, [night.notes]);
+    if (!editing) {
+      setDraft({
+        city:      night.city,
+        link:      night.link,
+        price:     night.price ?? "",
+        confirmed: night.confirmed ?? false,
+      });
+    }
+  }, [night.city, night.link, night.price, night.confirmed, night.notes]);
 
   const status = statusOf(night);
   const style  = STATUS_STYLE[status];
