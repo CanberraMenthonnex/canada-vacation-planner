@@ -3,7 +3,7 @@ import NightCard from "./NightCard";
 import StatsBar from "./StatsBar";
 
 export default function App() {
-  const { nights, updateNight } = useNights();
+  const { nights, updateNight, loading } = useNights();
 
   return (
     <div style={{ minHeight: "100vh", background: "#f0f4f8" }}>
@@ -20,6 +20,11 @@ export default function App() {
       </header>
 
       <main style={{ maxWidth: 720, margin: "2rem auto", padding: "0 1rem" }}>
+        {loading && (
+          <div style={{ textAlign: "center", color: "#a0aec0", padding: "2rem", fontSize: "0.9rem" }}>
+            Chargement…
+          </div>
+        )}
         <StatsBar nights={nights} />
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.55rem" }}>

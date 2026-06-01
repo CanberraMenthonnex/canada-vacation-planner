@@ -1,30 +1,37 @@
 import { useState, useEffect } from "react";
 import { INITIAL_NIGHTS } from "./data";
-
-const STORAGE_KEY = "canada-trip-nights";
-
-function loadFromStorage() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
+import { supabase } from "./supabase";
 
 export function useNights() {
-  const [nights, setNights] = useState(() => loadFromStorage() ?? INITIAL_NIGHTS);
+  const [nights, setNights] = useState(INITIAL_NIGHTS);
+  const [loading, setLoading] = useState(true);
 
+  // Load from Supabase on mount
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nights));
-  }, [nights]);
+    supabase
+      .from("nights")
+      .select("*")
+      .then(({ data, error }) => {
+        if (!error && data && data.length > 0) {
+          // Merge DB rows into the initial nights list (preserves order)
+          setNights(INITIAL_NIGHTS.map(n => {
+            const row = data.find(r => r.date === n.date);
+            return row ? { ...n, ...row } : n;
+          }));
+        }
+        setLoading(false);
+      });
+  }, []);
 
-  function updateNight(date, patch) {
-    setNights(prev =>
-      prev.map(n => (n.date === date ? { ...n, ...patch } : n))
-    );
+  async function updateNight(date, patch) {
+    // Optimistic local update
+    setNights(prev => prev.map(n => (n.date === date ? { ...n, ...patch } : n)));
+
+    // Upsert to Supabase
+    await supabase
+      .from("nights")
+      .upsert({ date, ...patch }, { onConflict: "date" });
   }
 
-  return { nights, updateNight };
+  return { nights, updateNight, loading };
 }
