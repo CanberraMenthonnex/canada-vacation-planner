@@ -1,0 +1,17 @@
+export const INITIAL_NIGHTS = [
+  { date: "2026-07-31", city: "Montréal",      link: "" },
+  { date: "2026-08-01", city: "Montréal",      link: "" },
+  { date: "2026-08-02", city: "Montréal",      link: "" },
+  { date: "2026-08-03", city: "Mont-Tremblant", link: "" },
+  { date: "2026-08-04", city: "Mont-Tremblant", link: "" },
+  { date: "2026-08-05", city: "Québec",         link: "" },
+  { date: "2026-08-06", city: "Québec",         link: "" },
+  { date: "2026-08-07", city: "Saguenay",       link: "" },
+  { date: "2026-08-08", city: "Saguenay",       link: "" },
+  { date: "2026-08-09", city: "Saguenay",       link: "" },
+  { date: "2026-08-10", city: "Montréal",       link: "" },
+  { date: "2026-08-11", city: "Ottawa",         link: "" },
+  { date: "2026-08-12", city: "Ottawa",         link: "" },
+  { date: "2026-08-13", city: "À définir",      link: "" },
+  { date: "2026-08-14", city: "Montréal",       link: "" },
+];
