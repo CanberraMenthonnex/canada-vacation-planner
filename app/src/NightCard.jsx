@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import ActivitiesPanel from "./ActivitiesPanel";
 
 const DAY_FR = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 const MONTH_FR = ["jan", "fév", "mar", "avr", "mai", "juin", "juil", "août", "sep", "oct", "nov", "déc"];
@@ -209,6 +210,9 @@ export default function NightCard({ night, index, total, onChange }) {
           )}
         </div>
       </div>
+
+      {/* Activities */}
+      {!editing && <ActivitiesPanel nightDate={night.date} />}
 
       {/* Notes toggle */}
       {!editing && (
